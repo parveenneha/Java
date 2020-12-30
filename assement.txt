@@ -1,0 +1,70 @@
+Insert into data_services_neparv97.source_object values(201,1,'ext_Assement','/home/neparv97/service-batch-ingestion/source/','ASSEMENT_MUB_20201019.DAT','delimited','/user/neparv97/mlb_data/assement/inbound/','neparv97_raw_temp','','','',',','','','','','',0,0,'','','','');
+
+Insert into data_services_neparv97.target_object values(2010,1,'Assement','','parquet','','/user/neparv97/assement_parquet/','neparv97_raw_zone','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,0,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+
+
+INSERT INTO data_services_neparv97.source_object_columns
+(source_object_id, source_object_col_id, source_column_name, source_column_data_type, source_column_desc, source_column_order, source_cdc_key, source_cdc_compare, source_trans_logic, source_partition_column, source_mask_indicator, source_column_start, source_column_end)
+VALUES(201,1,'psra_identifier','string','The unique identifier assigned to a Products and Services Risk Assessment',1,1,0,null,0,0,null,null),
+(201,2,'reporting_date','date','Identifies the reporting date for period.',2,1,0,null,0,0,null,null),
+(201,3,'as_of_date','date','Last Calendar Day of Month',3,0,1,null,0,0,null,null),
+(201,4,'legal_entity_id','string','Indicates the name that is used by a party for legal and official purposes and is registered with the government of the country in which the party is a recognized citizen or entity.  Entities impacted by the issue
+',4,0,1,null,0,0,null,null),
+(201,5,'sme_approval_indicator','string','Indicates if the Products and Services Risk Assessment has been approved by the SME.',5,0,1,null,0,0,null,null),
+(201,6,'overall_residual_risk_rating','string','PSRA - Overall Residual Risk Rating',6,0,1,null,0,0,null,null);
+
+
+
+INSERT INTO data_services_neparv97.target_object_columns
+(target_object_id, target_object_col_id, target_column_name, target_column_data_type, target_column_desc, target_column_order, target_cdc_key, target_cdc_compare, target_trans_logic, target_partition_column, target_mask_indicator, target_pk, target_pi, target_column_constraint)
+VALUES(2010,1,'psra_identifier','integer','The unique identifier assigned to a Products and Services Risk Assessment',1,1,0,null,0,0,null,null,null),
+(2010,2,'reporting_date','date','Identifies the reporting date for period.',2,1,0,null,0,0,null,null,null),
+(2010,3,'as_of_date','date','Last Calendar Day of Month',3,0,1,null,0,0,null,null,null),
+(2010,4,'legal_entity_id','varchar(100)','Indicates the name that is used by a party for legal and official purposes and is registered with the government of the country in which the party is a recognized citizen or entity.  Entities impacted by the issue
+',4,0,1,null,0,0,null,null,null),
+(2010,5,'sme_approval_indicator','varchar(100)','Indicates if the Products and Services Risk Assessment has been approved by the SME.',5,0,1,null,0,0,null,null,null),
+(2010,6,'overall_residual_risk_rating','varchar(100)','PSRA - Overall Residual Risk Rating',6,0,1,null,0,0,null,null,null),
+
+(2010,7,'record_type_code','string','indicator used to record if the row is daily (d), calendar month ( cm) , business month (bm) , intraday ( i) , adjustment ( a) etc',7,0,1,null,0,0,null,null,null),
+(2010,8,'create_timestamp','timestamp','the data and time when the record was created in data lake.',8,0,1,null,0,0,null,null,null),
+(2010,9,'batch_identifier','varchar(25)','the batch id that loaded the data.',9,0,1,null,0,0,null,null,null),
+(2010,10,'batch_process_name','varchar(100)','the batch process name that loaded the data.',10,0,1,null,0,0,null,null,null),
+(2010,11,'source_system_code','string','this column stores the source system  where data is generated.',11,1,0,null,0,0,null,null,null);
+
+
+
+ASSEMENT_MUB_20201019.DAT
+A,2020-10-19,2020-10-31,ABC,Y,GOOD
+B,2020-11-10,2020-10-31,DEF,N,BAD
+C,2020-11-31,2020-10-31,XYZ,Y,AVERAGE
+D,2020-12-01,2020-10-31,DEF,N,GOOD
+E,2020-10-19,2020-10-31,LMN,Y,BAD
+
+
+
+python3 copy_2_platform.py 201
+2.python3 create_ext_table.py -s 201
+3.python3 create_table.py -t 2010
+4.python3 replace_2_table.py 201 2010 99999999
+5.python3 append_2_table.py 7 70 20200801
+6.hdfs dfs -rm /user/bhapent/mlb_data/batting/inbound/*
+7.python3 copy_2_platform.py 7
+8.python3 cdc_2_table.py 7 70 20200802
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
